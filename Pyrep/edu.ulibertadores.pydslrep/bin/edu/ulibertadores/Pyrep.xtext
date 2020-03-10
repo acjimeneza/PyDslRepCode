@@ -1,0 +1,96 @@
+grammar edu.ulibertadores.PyDslRep with org.eclipse.xtext.common.Terminals
+
+generate PyDslRep "http://www.ulibertadores.edu/PyDslRep"
+
+Model:
+	environment+=Entity*;
+
+Entity:
+	Environment|Robot|IP|Sensor|TypeSensor|Wheel|DataMove|MoveCollection
+;
+
+
+Environment:
+	'environment' name = ID ('with' 'ip' ip=[IP])? 'has' '{'
+		robots+=[Robot]*
+	'}' 'robots' ('with' '{' 
+			moves += [MoveCollection]*
+		'}' 'moves')?
+;
+
+Robot:
+	'robot' name = ID 'with' 'port' port=INT 'has' '{' 
+		wheels +=  [Wheel]+
+	'}' 'wheels'
+;
+
+IP:
+	'ip' name = ID ip = IPA
+;
+
+IPA:
+	INT '.' INT '.' INT '.' INT
+;
+
+
+Wheel:
+	'wheel' name = ID 'with' 'radius' radius = FLOAT
+;
+
+
+MoveCollection:
+	(concurrent?=Parallel)? 'movement' name = ID 'of' robot = [Robot] '{'
+	 moves += AbstractDataMove*
+	"}"
+;
+
+AbstractDataMove:
+	AbstractCrossMove | AbstractMove
+;
+
+AbstractMove:
+	typeM = DataMove
+;
+
+AbstractCrossMove:
+	typeM = [DataMove]
+;
+
+
+DataMove:
+	Turn|Move
+;
+
+Move:
+	'move' (name?=ID)? distance = FLOAT type = Distance ('at' velocity = FLOAT)?
+;
+
+Parallel:
+	'parallel'
+;
+
+Distance:
+	'meters'|'centimeters'
+;
+
+Turn: 
+	'turn' (name?=ID)? type = Orientation (velocity = FLOAT)?
+;
+
+Orientation:
+	'left'|'right'
+;
+
+FLOAT:
+	('-')?INT '.' INT
+;
+
+
+Sensor:
+	'sensor' name = ID ':' type=TypeSensor
+;
+
+TypeSensor:
+	typeName = ('bumper' | 'distance')
+;
+

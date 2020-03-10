@@ -1,0 +1,111 @@
+ip ip1 127.0.0.1
+
+wheel wheelR with radius 4.5
+wheel wheelL with radius 4.5
+
+
+robot robot_1 with port 19999 has {
+	wheelL
+	wheelR
+	}wheels
+	
+robot robot_2 with port 20000 has {
+	wheelL
+	wheelR
+	}wheels
+
+robot robot_3 with port 20001 has {
+	wheelL
+	wheelR
+	}wheels
+
+robot robot_4 with port 20002 has {
+	wheelL
+	wheelR
+	}wheels
+
+movement mov_1 of robot_1 {
+	move 4.0 meters at 9.0 
+	turn right
+	move 4.0 meters at 9.0 
+	turn right 
+	move 2.0 meters at 9.0 
+	turn right
+	move 2.0 meters at 9.0 
+	turn right
+	move 1.0 meters at 9.0 
+	turn left 
+	move 1.0 meters at 9.0 
+	turn left 
+	move 2.0 meters at 9.0 
+	turn left 
+	move 3.0 meters at 9.0 
+	turn right
+	move 1.0 meters at 9.0 
+	turn right
+	move 3.0 meters at 9.0 
+}
+
+parallel movement mov_2 of robot_2 {
+	move 1.0 meters at 9.0 
+	turn right
+	move 1.0 meters at 9.0 
+	turn right 
+	move 1.0 meters at 9.0 
+	turn left 
+	move 1.0 meters at 9.0 
+	turn right
+	move 3.0 meters at 9.0 
+	turn left
+	move 2.0 meters at 9.0 
+	turn left
+	move 3.0 meters at 9.0	
+}
+
+parallel movement mov_3 of robot_3 {
+	move 4.0 meters at 9.0 
+	turn left
+	move 2.0 meters at 9.0 
+	turn left 
+	move 2.0 meters at 9.0 
+	turn right 
+	move 2.0 meters at 9.0 
+	turn left 
+	move 2.0 meters at 9.0 
+	turn left 
+	move 2.0 meters at 9.0 
+	turn left 
+}
+
+movement mov_4 of robot_4 {
+	move 2.0 meters at 9.0 
+	turn right
+	move 2.0 meters at 9.0 
+	turn left 
+	move 2.0 meters at 9.0 
+	turn right 
+	move 2.0 meters at 9.0 
+	turn right 
+	move 3.0 meters at 9.0 
+	turn right
+	move 3.0 meters at 9.0 
+	turn left 
+	move 1.0 meters at 9.0
+	turn left
+	move 3.0 meters at 9.0 
+}
+
+environment area_4, ip1 has {
+	robot_1
+	robot_2
+	robot_3
+	robot_4
+}robots with {
+	mov_2
+	mov_3
+	mov_1
+	mov_4
+}moves
+
+
+

@@ -1,0 +1,29 @@
+wheel wheelR with radius 4.5
+wheel wheelL with radius 4.5
+
+
+robot robot_1 with port 19999 has {
+	wheelL
+	wheelR
+	}wheels
+	
+
+movement mov_1 of robot_1 {
+	move 4.0 meters
+	turn right 
+	move 4.0 meters
+	turn right 
+	move 400.0 centimeters
+	turn right 
+}
+
+
+environment area_1 has {
+	robot_1
+}robots with {
+	mov_1
+}moves
+ 
+
+
+

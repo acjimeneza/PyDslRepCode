@@ -1,0 +1,44 @@
+ip ip1 127.0.0.1
+
+wheel wheelR with radius 4.5
+wheel wheelL with radius 4.5
+
+
+robot robot_1 with port 19999 has {
+	wheelL
+	wheelR
+	}wheels
+	
+robot robot_2 with port 20000 has {
+	wheelL
+	wheelR
+	}wheels
+
+robot robot_3 with port 20001 has {
+	wheelL
+	wheelR
+	}wheels
+
+robot robot_4 with port 20002 has {
+	wheelL
+	wheelR
+	}wheels
+
+movement mov_1 of robot_1 {
+	move 400.0 centimeters 
+	turn right
+	move 4.0 meters at 15.0
+	turn right 
+	move 100.0 centimeters at 5.0 
+	move 3.0 meters
+}
+
+
+environment area_5 with ip ip1 has {
+	robot_1
+}robots with {
+    mov_1
+}moves
+
+
+
