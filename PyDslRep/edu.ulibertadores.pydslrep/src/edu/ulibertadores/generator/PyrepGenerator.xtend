@@ -32,8 +32,6 @@ class PyDslRepGenerator extends AbstractGenerator {
 		
 	}
 	
-	
-	
 	def callModules()'''
 		import vrep
 		import time
@@ -82,7 +80,7 @@ class PyDslRepGenerator extends AbstractGenerator {
 		    return pos[0], pos[1]
 		
 		
-		def movement_right(robot, vel=9.0):
+		def movement_right(robot, angle=0, vel=9.0):
 		    w = vel/robot[4]  # Angular velocity
 		    return_code_pos, pos = vrep.simxGetObjectPosition(robot[0], robot[1], -1, vrep.simx_opmode_streaming)
 		    return_code_ori, angle = vrep.simxGetObjectOrientation(robot[0], robot[1], -1, vrep.simx_opmode_streaming)
@@ -92,17 +90,17 @@ class PyDslRepGenerator extends AbstractGenerator {
 		    angle_degrees = math.degrees(angle[2])
 		    flag = False
 		    if 88 <= angle_degrees <= 92:
-		        angle_objective = 0
+		        angle_objective = angle
 		    else:
 		        if -92 <= angle_degrees <= -88:
-		            angle_objective = 180
+		            angle_objective = angle + 180
 		            flag = True
 		        else:
 		            if -2 <= angle_degrees <= 2:
-		                angle_objective = -90
+		                angle_objective = angle -90
 		                flag = True
 		            else:
-		                angle_objective = 90
+		                angle_objective = angle +90
 		
 		    vrep.simxSetJointTargetVelocity(robot[0], robot[2], w * .03, vrep.simx_opmode_streaming)
 		    vrep.simxSetJointTargetVelocity(robot[0], robot[3], -w * .03, vrep.simx_opmode_streaming)
@@ -119,7 +117,7 @@ class PyDslRepGenerator extends AbstractGenerator {
 		    vrep.simxSetJointTargetVelocity(robot[0], robot[3], 0, vrep.simx_opmode_streaming)
 		
 		
-		def movement_left(robot, vel=9.0):
+		def movement_left(robot, angle=0, vel=9.0):
 		    w = vel/robot[4]  # Angular velocity
 		    return_code_pos, pos = vrep.simxGetObjectPosition(robot[0], robot[1], -1, vrep.simx_opmode_streaming)
 		    return_code_ori, angle = vrep.simxGetObjectOrientation(robot[0], robot[1], -1, vrep.simx_opmode_streaming)
@@ -129,15 +127,15 @@ class PyDslRepGenerator extends AbstractGenerator {
 		    angle_degrees = math.degrees(angle[2])
 		    flag = False
 		    if 88 <= angle_degrees <= 92:
-		        angle_objective = 180
+		        angle_objective = angle + 180
 		    else:
 		        if -92 <= angle_degrees <= -88:
-		            angle_objective = 0
+		            angle_objective = angle
 		        else:
 		            if -2 <= angle_degrees <= 2:
-		                angle_objective = 90
+		                angle_objective = angle + 90
 		            else:
-		                angle_objective = -90
+		                angle_objective = angle-90
 		                flag = True
 		    vrep.simxSetJointTargetVelocity(robot[0], robot[2], -w * .03, vrep.simx_opmode_streaming)
 		    vrep.simxSetJointTargetVelocity(robot[0], robot[3], w * .03, vrep.simx_opmode_streaming)
@@ -171,6 +169,35 @@ class PyDslRepGenerator extends AbstractGenerator {
 		                                             vrep.simx_opmode_oneshot_wait)
 		# Create object «r.name»
 		«r.name» = [client_id_«r.name», «r.name»_handle, left_motor_«r.name»_handle, right_motor_«r.name»_handle, «r.wheels.get(0).radius»]
+	'''
+	def createSlamMovement(Environment e)'''
+	«var new_array = newHashSet»
+	#new_array.addAll(e.pos)»
+	 «IF e.sensors !== null»
+
+	«IF (m.eContents.get(0) as Move).type == 'meters'»    _ = movement_forward(robot, «(m.eContents.get(0) as Move).distance», «(m.eContents.get(0) as Move).velocity»)
+		«ELSE»    _ = movement_forward(robot, «(m.eContents.get(0) as Move).distance»/100.0, «(m.eContents.get(0) as Move).velocity»)
+		«ENDIF»
+	«ELSE»
+		«IF (m.eContents.get(0) as Move).type == 'meters'»    _ = movement_forward(robot, «(m.eContents.get(0) as Move).distance», 9.0)
+		«ELSE»    _ = movement_forward(robot, «(m.eContents.get(0) as Move).distance»/100.0,  9.0)
+		«ENDIF»
+	«ENDIF»
+    	«FOR sensor : new_array»def «sensor.name»_«move.robot.name»(robot):
+            «FOR m : move.read»
+			    «IF (m.eContents.get(0) as Move).velocity !== null»
+			        «IF (m.eContents.get(0) as Move).type == 'meters'»    _ = movement_forward(robot, «(m.eContents.get(0) as Move).distance», «(m.eContents.get(0) as Move).velocity»)
+			        «ELSE»    _ = movement_forward(robot, «(m.eContents.get(0) as Move).distance»/100.0, «(m.eContents.get(0) as Move).velocity»)
+		        	«ENDIF»
+		        «ELSE»
+			        «IF (m.eContents.get(0) as Move).type == 'meters'»    _ = movement_forward(robot, «(m.eContents.get(0) as Move).distance», 9.0)
+			        «ELSE»    _ = movement_forward(robot, «(m.eContents.get(0) as Move).distance»/100.0,  9.0)
+			        «ENDIF»
+			    «ENDIF»
+		    ENDFOR»    pass
+    	«ENDFOR»
+	«return new_array»
+    «ENDIF»
 	'''
 
 	def createDefMovements(Environment e)'''

@@ -19,9 +19,14 @@ Environment:
 ;
 
 Robot:
-	'robot' name = ID 'with' 'port' port=INT 'has' '{' 
+	'robot' name = ID  ('type' type=[RobotType])? 'with' 'port' port=INT 'has' '{' 
 		wheels +=  [Wheel]+
-	'}' 'wheels'
+	'}' 'wheels' ('with' 'sensors' '{' sensors +=  [Sensor]+  '}')?
+;
+
+
+RobotType:
+	TwoWheel | FourWheel |FourWheelHolonomic
 ;
 
 IP:
@@ -37,6 +42,9 @@ Wheel:
 	'wheel' name = ID 'with' 'radius' radius = FLOAT
 ;
 
+WheelH:
+	'wheelH' name = ID 'with' 'radius' radius = FLOAT
+;
 
 MoveCollection:
 	(concurrent?=Parallel)? 'movement' name = ID 'of' robot = [Robot] '{'
@@ -58,7 +66,7 @@ AbstractCrossMove:
 
 
 DataMove:
-	Turn|Move
+	Turn|Move|Slam
 ;
 
 Move:
@@ -69,22 +77,44 @@ Parallel:
 	'parallel'
 ;
 
+TwoWheel:
+	'tw'
+;
+
+
+FourWheel:
+	'fw'
+;
+
+FourWheelHolonomic:
+	'fwh'
+;
+
 Distance:
 	'meters'|'centimeters'
 ;
 
 Turn: 
-	'turn' (name?=ID)? type = Orientation (velocity = FLOAT)?
+	'turn' (name?=ID)? type = Orientation (velocity = FLOAT)? (angle = FLOAT)?
+;
+
+TurnUntil:
+	'turn' type = Orientation '{'
+	 sensors += Sensor*
+	"}"
 ;
 
 Orientation:
-	'left'|'right'
+	'left'|'right'|'until'
 ;
 
 FLOAT:
 	('-')?INT '.' INT
 ;
 
+Slam:
+	'slam'
+;
 
 Sensor:
 	'sensor' name = ID ':' type=TypeSensor
